@@ -5,13 +5,20 @@ import os
 
 pygame.init()
 
+# Base directory for loading assets relative to this script
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+def asset(filename):
+    """Return the absolute path to an asset file in the same directory as this script."""
+    return os.path.join(BASE_DIR, filename)
+
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Alien Invasion with Power-up Buffs and Miniboss")
 clock = pygame.time.Clock()
 
 # Load the background image
-background_image = pygame.image.load("C:\\Users\\vignan\\Desktop\\team\\BGgs.jpg").convert()
+background_image = pygame.image.load(asset("BGgs.jpg")).convert()
 background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Colors (for fallback)
@@ -60,21 +67,21 @@ SCORE_PER_ALIEN = 81
 pygame.mixer.init()
 
 # Load background music files
-bg_music_normal = "C:\\Users\\vignan\\Desktop\\team\\bgmusic.mp3"
-bg_music_miniboss = "C:\\Users\\vignan\\Desktop\\team\\bg_miniboss.mp3"
-bg_music_low_health = "C:\\Users\\vignan\\Desktop\\team\\low_health.mp3"
-stage_clear_sound = "C:\\Users\\vignan\\Desktop\\team\\stage_clear.mp3"  # Add this file
-game_over_sound = "C:\\Users\\vignan\\Desktop\\team\\game_over.mp3"  # Add this file
-start_game_sound = "C:\\Users\\vignan\\Desktop\\team\\start_game.mp3"  # Add this file
+bg_music_normal = asset("bgmusic.mp3")
+bg_music_miniboss = asset("bg_miniboss.mp3")
+bg_music_low_health = asset("low_health.mp3")
+stage_clear_sound = asset("stage_clear.mp3")
+game_over_sound = asset("game_over.mp3")
+start_game_sound = asset("start_game.mp3")
 
 # Load bullet sounds
 try:
-    bullet_sound_normal = pygame.mixer.Sound("C:\\Users\\vignan\\Desktop\\team\\bullet_normal.wav")
+    bullet_sound_normal = pygame.mixer.Sound(asset("bullet_normal.wav"))
 except FileNotFoundError:
     bullet_sound_normal = None
     print("Warning: bullet_normal.wav not found.")
 try:
-    bullet_sound_power = pygame.mixer.Sound("C:\\Users\\vignan\\Desktop\\team\\bullet_power.mp3")
+    bullet_sound_power = pygame.mixer.Sound(asset("bullet_power.mp3"))
 except FileNotFoundError:
     bullet_sound_power = None
     print("Warning: bullet_power.wav not found.")
@@ -108,7 +115,7 @@ class Button:
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("C:\\Users\\vignan\\Desktop\\team\\playern.png").convert_alpha()
+        self.image = pygame.image.load(asset("playern.png")).convert_alpha()
         self.image = pygame.transform.scale(self.image, (PLAYER_WIDTH, PLAYER_HEIGHT))
         self.rect = self.image.get_rect(midbottom=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 10))
         self.speed = PLAYER_SPEED
@@ -135,12 +142,12 @@ class Bullet(pygame.sprite.Sprite):
         super().__init__()
         if powered_up:
             try:
-                self.image = pygame.image.load("C:\\Users\\vignan\\Desktop\\team\\BB.png").convert_alpha()
+                self.image = pygame.image.load(asset("BB.PNG")).convert_alpha()
             except FileNotFoundError:
                 print("Warning: Power-up bullet image not found. Using default bullet image.")
-                self.image = pygame.image.load("C:\\Users\\vignan\\Desktop\\team\\unnamed.png").convert_alpha()
+                self.image = pygame.image.load(asset("unnamed.png")).convert_alpha()
         else:
-            self.image = pygame.image.load("C:\\Users\\vignan\\Desktop\\team\\unnamed.png").convert_alpha()
+            self.image = pygame.image.load(asset("unnamed.png")).convert_alpha()
         self.image = pygame.transform.scale(self.image, (BULLET_WIDTH, BULLET_HEIGHT))
         self.rect = self.image.get_rect(midbottom=(x, y))
         self.speed = BULLET_SPEED
@@ -154,7 +161,7 @@ class Bullet(pygame.sprite.Sprite):
 class AlienBullet(pygame.sprite.Sprite):
     def __init__(self, x, y, speed=ALIEN_BULLET_SPEED):
         super().__init__()
-        self.image = pygame.image.load("C:\\Users\\vignan\\Desktop\\team\\mm.png").convert_alpha()
+        self.image = pygame.image.load(asset("mm.png")).convert_alpha()
         self.image = pygame.transform.scale(self.image, (ALIEN_BULLET_WIDTH, ALIEN_BULLET_HEIGHT))
         self.rect = self.image.get_rect(midtop=(x, y))
         self.speed = speed
@@ -168,7 +175,7 @@ class AlienBullet(pygame.sprite.Sprite):
 class Alien(pygame.sprite.Sprite):
     def __init__(self, x, y, health):
         super().__init__()
-        self.image = pygame.image.load("C:\\Users\\vignan\\Desktop\\team\\ALIEN.png").convert_alpha()
+        self.image = pygame.image.load(asset("ALIEN.png")).convert_alpha()
         self.image = pygame.transform.scale(self.image, (ALIEN_WIDTH, ALIEN_HEIGHT))
         self.rect = self.image.get_rect(topleft=(x, y))
         self.speed = ALIEN_SPEED
@@ -191,7 +198,7 @@ class Alien(pygame.sprite.Sprite):
 class Miniboss(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("C:\\Users\\vignan\\Desktop\\team\\ENE.png").convert_alpha()
+        self.image = pygame.image.load(asset("ENE.png")).convert_alpha()
         self.image = pygame.transform.scale(self.image, (MINIBOSS_WIDTH, MINIBOSS_HEIGHT))
         self.rect = self.image.get_rect(midtop=(SCREEN_WIDTH // 2, 30))
         self.health = MINIBOSS_HEALTH
@@ -218,7 +225,7 @@ class PowerUp(pygame.sprite.Sprite):
     def __init__(self, kind, x, y):
         super().__init__()
         self.kind = kind
-        image_path = f"C:\\Users\\vignan\\Desktop\\team\\box_{kind}.png"
+        image_path = asset(f"box_{kind}.png")
         try:
             self.image = pygame.image.load(image_path).convert_alpha()
         except FileNotFoundError:
@@ -238,7 +245,7 @@ class PowerUp(pygame.sprite.Sprite):
 class AssistantShip(pygame.sprite.Sprite):
     def __init__(self, player, offset):
         super().__init__()
-        self.image = pygame.image.load("C:\\Users\\vignan\\Desktop\\team\\player.png").convert_alpha()
+        self.image = pygame.image.load(asset("player.png")).convert_alpha()
         self.image = pygame.transform.scale(self.image, (ASSISTANT_WIDTH, ASSISTANT_HEIGHT))
         self.rect = self.image.get_rect(center=(player.rect.centerx + offset, player.rect.centery - 40))
         self.player = player
